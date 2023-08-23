@@ -1,9 +1,16 @@
 import { connect } from "react-redux";
-import React from "react";
+import React, { useEffect } from "react";
 import Game from "./Game";
-import { getNextGame } from "../actions";
+import { getNextGame, loadData } from "../actions";
 
 const Games = (props) => {
+  console.log(props);
+  useEffect(() => {
+    console.log("Reached here");
+    props.loadData();
+    console.log(props);
+  }, []);
+
   return (
     <div className="games-container">
       <h1>Games</h1>
@@ -15,16 +22,10 @@ const Games = (props) => {
 };
 
 const mapStateToProps = (state) => {
+  console.log(state);
   return {
-    awayTeam: state.awayTeam,
-    awayTeamLogo: state.Game,
-    homeTeam: state.homeTeam,
-    homeTeamLogo: state.homeTeamLogo,
-    startTime: state.startTime,
-    scores: state.scores,
-    isFetching: state.isFetching,
-    error: state.error,
+    games: state.games,
   };
 };
 
-export default connect(mapStateToProps, { getNextGame })(Games);
+export default connect(mapStateToProps, { getNextGame, loadData })(Games);

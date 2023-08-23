@@ -1,10 +1,31 @@
 import axios from "axios";
 import { options, logos } from "../data";
 
+export const LOAD_DATA = "LOAD_DATA";
 export const GET_NEXT_GAME = "GET_NEXT_GAME";
 export const SET_IS_FETCHING = "SET_IS_FETCHING";
 export const NEXT_SUCCESS = "NEXT_SUCCESS";
+export const LOAD_SUCCESS = "LOAD_SUCCESS";
 export const NEXT_ERROR = "NEXT_ERROR";
+
+export const loadData = () => (dispatch) => {
+  dispatch(setIsFetching(true));
+  axios
+    .get(options.url, { headers: options.headers })
+    .then((res) => {
+      const games = res.data;
+      console.log(games);
+      dispatch(loadSuccess(games));
+    })
+    .catch((err) => dispatch(nextError(err.message)));
+};
+
+export const loadSuccess = (games) => {
+  return {
+    type: LOAD_SUCCESS,
+    payload: games,
+  };
+};
 
 function convertTime(isoString) {
   const date = new Date(isoString);
@@ -27,21 +48,12 @@ function convertTime(isoString) {
 
 export const getNextGame = () => (dispatch) => {
   dispatch(setIsFetching(true));
-
   axios
     .get(options.url, { headers: options.headers })
     .then((res) => {
-      const teams = res.data.map((team) => {
-        console.log(team.away_team);
-        return {
-          away: team.away_team,
-          home: team.home_team,
-          awayScore: team.scores[0].score,
-          homeScore: team.scores[1].score,
-          time: convertTime(team.commence_time),
-        };
-      });
-      dispatch(nextSuccess(teams[0]));
+      const games = res.data;
+      console.log(games);
+      dispatch(nextSuccess(games));
     })
     .catch((err) => dispatch(nextError(err.message)));
 };
@@ -53,7 +65,12 @@ export const setIsFetching = (isFetching) => {
   };
 };
 
-export const nextSuccess = () => {};
+export const nextSuccess = (game) => {
+  return {
+    type: NEXT_SUCCESS,
+    payload: game,
+  };
+};
 
 export const nextError = (error) => {
   return {

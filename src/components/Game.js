@@ -1,28 +1,41 @@
 import React from "react";
 import { connect } from "react-redux";
+import { logos } from "../data";
 
 const Game = (props) => {
+  console.log(props);
+  const logos = props.logos;
+  const activeGameIndex = props.activeGame;
+  const activeGame = props.games[activeGameIndex];
+  console.log(props.games[activeGameIndex]);
+  const awayTeam = activeGame.away_team;
+  const homeTeam = activeGame.home_team;
+
+  console.log(logos[awayTeam]);
+  console.log(logos[homeTeam]);
   return (
-    <div className="game-container">
-      <h2> props.awayTeam vs. props.homeTeam</h2>
-      <h4>Scores</h4>
-      <h4>Time</h4>
-    </div>
+    props.games.length > 0 && (
+      <div className="game-container">
+        <h2>
+          {" "}
+          {activeGame.away_team ?? props.games} vs.{" "}
+          {activeGame.home_team ?? props.games}
+        </h2>
+        <img src={logos[activeGame.away_team]} />
+        <h4>
+          {props.awayScore}-{props.homeScore}
+        </h4>
+        <h4>{props.startTime}</h4>
+      </div>
+    )
   );
 };
 
 const mapStateToProps = (state) => {
   return {
-    awayTeam: state.awayTeam,
-    awayTeamLogo: state.Game,
-    homeTeam: state.homeTeam,
-    homeTeamLogo: state.homeTeamLogo,
-    startTime: state.startTime,
-    scores: state.scores,
-    awayScore: state.awayScore,
-    homeScore: state.homeScore,
-    isFetching: state.isFetching,
-    error: state.error,
+    games: state.games,
+    activeGame: state.activeGame,
+    logos: logos,
   };
 };
 

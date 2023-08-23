@@ -3,18 +3,12 @@ import {
   SET_IS_FETCHING,
   NEXT_SUCCESS,
   NEXT_ERROR,
+  LOAD_SUCCESS,
 } from "../actions";
 
 const initialState = {
-  awayTeam: "Tampa Bay Buccaneers",
-  awayTeamLogo:
-    "https://s.yimg.com/cv/apiv2/default/nfl/20200508/500x500/buccaneers_wbg.png",
-  homeTeam: "New York Jets",
-  homeTeamLogo:
-    "https://1000logos.net/wp-content/uploads/2017/03/New-York-Jets-Logo-1978.png",
-  startTime: "August 19th 7pm",
-  awayScore: null,
-  homeScore: null,
+  games: [],
+  activeGame: 0,
   isFetching: false,
   error: "",
 };
@@ -22,7 +16,7 @@ const initialState = {
 export const reducer = (state = initialState, action) => {
   switch (action.type) {
     case GET_NEXT_GAME:
-      return state;
+      return { ...state, awayTeam: action.payload.away };
     case SET_IS_FETCHING:
       return {
         ...state,
@@ -42,5 +36,13 @@ export const reducer = (state = initialState, action) => {
         ...state,
         error: action.payload,
       };
+    case LOAD_SUCCESS:
+      return {
+        ...state,
+        games: action.payload,
+      };
+
+    default:
+      return state;
   }
 };
