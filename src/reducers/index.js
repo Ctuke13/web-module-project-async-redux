@@ -1,5 +1,6 @@
 import {
   GET_NEXT_GAME,
+  GET_PREV_GAME,
   SET_IS_FETCHING,
   NEXT_SUCCESS,
   NEXT_ERROR,
@@ -16,7 +17,9 @@ const initialState = {
 export const reducer = (state = initialState, action) => {
   switch (action.type) {
     case GET_NEXT_GAME:
-      return { ...state, awayTeam: action.payload.away };
+      return { ...state, activeGame: state.activeGame + 1 };
+    case GET_PREV_GAME:
+      return { ...state, activeGame: state.activeGame - 1 };
     case SET_IS_FETCHING:
       return {
         ...state,
@@ -25,11 +28,7 @@ export const reducer = (state = initialState, action) => {
     case NEXT_SUCCESS:
       return {
         ...state,
-        awayTeam: action.payload.away,
-        homeTeam: action.payload.home,
-        awayScore: action.payload.awayScore,
-        homeScore: action.payload.homeScore,
-        startTime: action.payload.time,
+        activeGame: action.payload,
       };
     case NEXT_ERROR:
       return {

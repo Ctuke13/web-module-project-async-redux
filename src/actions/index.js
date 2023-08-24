@@ -1,8 +1,10 @@
 import axios from "axios";
 import { options, logos } from "../data";
+import { getState } from "redux-thunk";
 
 export const LOAD_DATA = "LOAD_DATA";
 export const GET_NEXT_GAME = "GET_NEXT_GAME";
+export const GET_PREV_GAME = "GET_PREV_GAME";
 export const SET_IS_FETCHING = "SET_IS_FETCHING";
 export const NEXT_SUCCESS = "NEXT_SUCCESS";
 export const LOAD_SUCCESS = "LOAD_SUCCESS";
@@ -27,35 +29,34 @@ export const loadSuccess = (games) => {
   };
 };
 
-function convertTime(isoString) {
-  const date = new Date(isoString);
-
-  const year = date.getUTCFullYear();
-  const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Months are 0-indexed
-  const day = String(date.getUTCDate()).padStart(2, "0");
-
-  let hours = date.getUTCHours();
-  const minutes = String(date.getUTCMinutes()).padStart(2, "0");
-
-  const amOrPm = hours >= 12 ? "PM" : "AM";
-
-  // Convert 24-hour format to 12-hour format
-  hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
-
-  return `${month}/${day}/${year} ${hours}:${minutes}${amOrPm}`;
-}
-
-export const getNextGame = () => (dispatch) => {
+export const getNextGame = () => (dispatch, getState) => {
   dispatch(setIsFetching(true));
-  axios
-    .get(options.url, { headers: options.headers })
-    .then((res) => {
-      const games = res.data;
-      console.log(games);
-      dispatch(nextSuccess(games));
-    })
-    .catch((err) => dispatch(nextError(err.message)));
+  const { activeGame, games } = getState();
+  if (activeGame < games.length - 1) {
+    dispatch(nextSuccess(activeGame + 1));
+  } else {
+    dispatch(nextError("No more games available"));
+  }
+
+  return {
+    type: GET_NEXT_GAME,
+    payload: activeGame,
+  };
+};
+
+export const getPrevGame = () => (dispatch, getState) => {
+  dispatch(setIsFetching(true));
+  const { activeGame, games } = getState();
+  if (activeGame > 0) {
+    dispatch(nextSuccess(activeGame - 1));
+  } else {
+    dispatch(nextError("No more games available"));
+  }
+
+  return {
+    type: GET_NEXT_GAME,
+    payload: activeGame,
+  };
 };
 
 export const setIsFetching = (isFetching) => {
@@ -65,10 +66,10 @@ export const setIsFetching = (isFetching) => {
   };
 };
 
-export const nextSuccess = (game) => {
+export const nextSuccess = (activeGame) => {
   return {
     type: NEXT_SUCCESS,
-    payload: game,
+    payload: activeGame,
   };
 };
 
